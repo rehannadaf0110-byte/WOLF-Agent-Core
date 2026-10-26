@@ -4,4 +4,4 @@
     android:canRetrieveWindowContent="true"
     android:canPerformGestures="true"
     android:notificationTimeout="100"
-    android:description="Allows WOLF to perform explicitly approved actions on this device. Enable only if you trust your WOLF installation." />
+    android:description="@string/wolf_accessibility_description" />

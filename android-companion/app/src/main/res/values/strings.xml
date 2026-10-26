@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="wolf_accessibility_description">Allows WOLF to perform explicitly approved actions on this device. Enable only if you trust your WOLF installation.</string>
+</resources>
