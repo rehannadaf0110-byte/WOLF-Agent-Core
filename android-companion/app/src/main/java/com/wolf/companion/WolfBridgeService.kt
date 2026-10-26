@@ -33,8 +33,12 @@ class WolfBridgeService : Service() {
         val head=StringBuilder(); var last4=""; while(head.length<12000){ val n=input.read(); if(n<0)break; head.append(n.toChar()); last4=(last4+n.toChar()).takeLast(4); if(last4=="\r\n\r\n")break }
         val lines=head.toString().split("\r\n"); val first=lines.firstOrNull().orEmpty().split(" "); val method=first.getOrNull(0).orEmpty(); val route=first.getOrNull(1).orEmpty(); val headers=mutableMapOf<String,String>(); lines.drop(1).takeWhile{it.isNotBlank()}.forEach{val ix=it.indexOf(':');if(ix>0)headers[it.substring(0,ix).trim().lowercase()]=it.substring(ix+1).trim()}
         val len=(headers["content-length"]?:"0").toIntOrNull()?.coerceIn(0,20000)?:0; val bytes=ByteArray(len); var read=0; while(read<len){val n=input.read(bytes,read,len-read);if(n<0)break;read+=n}; val body=String(bytes,0,read,Charset.forName("UTF-8"))
-        val expected=getSharedPreferences("wolf",Context.MODE_PRIVATE).getString("token","")
-        if(headers["x-wolf-token"]!=expected){respond(out,401,JSONObject().put("ok",false).put("error","Unauthorized"));return}
+        val expected=getSharedPreferences("wolf",Context.MODE_PRIVATE).getString("token",null)
+        val supplied=headers["x-wolf-token"]
+        if(expected.isNullOrBlank() || supplied.isNullOrBlank() || supplied != expected){
+            respond(out,401,JSONObject().put("ok",false).put("error","Unauthorized"))
+            return
+        }
         if(method=="GET"&&route=="/status"){respond(out,200,JSONObject().put("ok",true).put("accessibilityEnabled",WolfAccessibilityService.instance!=null).put("port",8788));return}
         if(method=="POST"&&route=="/action"){
             val json=JSONObject(body); if(json.optBoolean("confirmAction")!=true){respond(out,403,JSONObject().put("ok",false).put("error","confirmAction=true required"));return}
